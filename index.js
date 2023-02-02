@@ -1,6 +1,6 @@
 const R = require('ramda');
-
 const { Client } = require('@elastic/elasticsearch');
+
 const { env: { elasticLogs, elasticLogIndex = 'apilog_ti2' } } = process;
 
 class Plugin {
@@ -13,6 +13,7 @@ class Plugin {
     return (async () => {
       if (!elasticLogs) return this;
       const elasticLogsClient = new Client({ node: elasticLogs });
+      this.elasticLogsClient = elasticLogsClient;
 
       const mappings = {
         dynamic: true,
@@ -84,16 +85,16 @@ class Plugin {
     })();
   }
 
-  async onRequestStart(requestBody) {
-    await elasticLogsClient.index({
+  async onRequestStart(body) {
+    await this.elasticLogsClient.index({
       index: elasticLogIndex,
-      id: requestBody.requestId,
-      body: requestBody,
+      id: body.requestId,
+      body,
     });
   }
 
   async onRequestEnd(body) {
-    await elasticLogsClient.index({
+    await this.elasticLogsClient.index({
       index: elasticLogIndex,
       id: body.requestId,
       body,

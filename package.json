@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/TourConnect/ti2-elasticlog/issues"
   },
-  "homepage": "https://github.com/TourConnect/ti2-elasticlog#readme"
+  "homepage": "https://github.com/TourConnect/ti2-elasticlog#readme",
+  "dependencies": {
+    "@elastic/elasticsearch": "7.13.0",
+    "eslint": "^8.14.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "ramda": "^0.28.0"
+  }
 }

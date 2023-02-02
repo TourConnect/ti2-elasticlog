@@ -1,6 +1,6 @@
 {
   "name": "ti2-elasticlog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ti2's elasticsearch log plugin",
   "main": "index.js",
   "scripts": {

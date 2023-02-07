@@ -1,7 +1,13 @@
 const R = require('ramda');
 const { Client } = require('@elastic/elasticsearch');
 
-const { env: { elasticLogs, elasticLogIndex = 'apilog_ti2' } } = process;
+const {
+  env: {
+    elasticLogs,
+    elasticLogIndex = 'apilog_ti2',
+    NODE_ENV: env,
+  },
+} = process;
 
 class Plugin {
   constructor(params = {}) { // we get the env variables from here
@@ -85,19 +91,21 @@ class Plugin {
     })();
   }
 
-  async onRequestStart(body) {
-    await this.elasticLogsClient.index({
-      index: elasticLogIndex,
-      id: body.requestId,
-      body,
-    });
-  }
-
-  async onRequestEnd(body) {
-    await this.elasticLogsClient.index({
-      index: elasticLogIndex,
-      id: body.requestId,
-      body,
+  eventHandler(eventEmmiter) {
+    const eventsArr = (this.events2log || 'request.*').split(',');
+    const pluginObj = this;
+    eventsArr.forEach(eventName => {
+      eventEmmiter.on(eventName, async function (body) {
+        await pluginObj.elasticLogsClient.index({
+          index: elasticLogIndex,
+          id: body.requestId,
+          body: {
+            env,
+            ...body,
+            eventType: this.event,
+          },
+        });
+      });
     });
   }
 }
